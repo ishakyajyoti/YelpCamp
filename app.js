@@ -20,10 +20,10 @@ const campgroundRoutes = require('./routes/campgrounds');
 const reviewRoutes = require('./routes/reviews');
 const MongoStore = require("connect-mongo");
 
-const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
+const mongoUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
 
 // https://murmuring-sands-52090.herokuapp.com
-mongoose.connect(dbUrl, {
+mongoose.connect(mongoUrl, {
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true,
@@ -50,18 +50,18 @@ app.use(mongoSanitize({
 }))
 const secret = process.env.CLOUDINARY_SECRET || 'thisshouldbeabettersecret!';
 
-const store = new MongoStore({
-    url: dbUrl,
-    secret,
-    touchAfter: 24 * 60 * 60
-});
+// const store = new MongoStore({
+//     url: mongoUrl,
+//     secret,
+//     touchAfter: 24 * 60 * 60
+// });
 
-store.on("error", function (e) {
-    console.log("SESSION STORE ERROR", e)
-})
+//store.on("error", function (e) {
+  //  console.log("SESSION STORE ERROR", e)
+//})
 
 const sessionConfig = {
-    store,
+ //   store,
     name: 'session',
     secret,
     resave: false,
