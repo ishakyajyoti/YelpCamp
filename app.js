@@ -18,17 +18,19 @@ const mongoSanitize = require('express-mongo-sanitize');
 const userRoutes = require('./routes/users');
 const campgroundRoutes = require('./routes/campgrounds');
 const reviewRoutes = require('./routes/reviews');
-const MongoStore = require("connect-mongo");
 
-const mongoUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
+const MongoDBStore = require('connect-mongo');
 
-// https://murmuring-sands-52090.herokuapp.com
-mongoose.connect(mongoUrl, {
+const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/yelp-camp';
+
+mongoose.connect(dbUrl, {
     useNewUrlParser: true,
     useCreateIndex: true,
     useUnifiedTopology: true,
-    useFindAndModify: false
+    useFindAndModify: false,
+
 });
+
 
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "connection error:"));
@@ -48,20 +50,21 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use(mongoSanitize({
     replaceWith: '_'
 }))
-const secret = process.env.CLOUDINARY_SECRET || 'thisshouldbeabettersecret!';
+const secret = process.env.SECRET || 'thisshouldbeabettersecret!';
 
-// const store = new MongoStore({
-//     url: mongoUrl,
-//     secret,
-//     touchAfter: 24 * 60 * 60
-// });
+const store =  MongoDBStore.create({
+    mongoUrl: dbUrl,
+    secret,
+    touchAfter: 24 * 60 * 60
 
-//store.on("error", function (e) {
-  //  console.log("SESSION STORE ERROR", e)
-//})
+});
+
+store.on("error", function (e) {
+    console.log("SESSION STORE ERROR", e)
+})
 
 const sessionConfig = {
- //   store,
+    store,
     name: 'session',
     secret,
     resave: false,
